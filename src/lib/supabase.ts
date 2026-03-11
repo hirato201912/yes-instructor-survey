@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Lazy initialization to avoid errors when env vars are not set at build time
-let _supabase: ReturnType<typeof createClient> | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _supabase: ReturnType<typeof createClient<any>> | null = null
 
 function getSupabase() {
   if (!_supabase) {
@@ -10,7 +11,7 @@ function getSupabase() {
     if (!url || !key) {
       throw new Error('Supabase の環境変数が設定されていません。.env.local を確認してください。')
     }
-    _supabase = createClient(url, key)
+    _supabase = createClient<any>(url, key)
   }
   return _supabase
 }
