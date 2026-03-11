@@ -73,15 +73,15 @@ export default function Step1({ data, onChange, onNext, error }: Props) {
         <p className="text-xs text-gray-400 mb-3">各科目の指導レベルを選択してください（デフォルト：指導不可）</p>
       </div>
 
-      <Accordion title="🏫 小学生" defaultOpen={true}>
+      <Accordion title="小学生" defaultOpen={true}>
         {renderSubjects('elementary', ELEMENTARY_SUBJECTS)}
       </Accordion>
 
-      <Accordion title="📚 中学生">
+      <Accordion title="中学生">
         {renderSubjects('junior_high', JUNIOR_HIGH_SUBJECTS)}
       </Accordion>
 
-      <Accordion title="🎓 高校生">
+      <Accordion title="高校生">
         {renderSubjects('high_school', HIGH_SCHOOL_SUBJECTS)}
       </Accordion>
 
