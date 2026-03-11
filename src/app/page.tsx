@@ -103,6 +103,7 @@ export default function Home() {
             糸島学習塾 YES
           </div>
           <div className="flex items-center justify-center gap-2 mb-1">
+            <h1 className="text-xl font-bold text-gray-800">スキル＆興味シート</h1>
             <Image
               src="/orange_right.jpg"
               alt="YESくま"
@@ -110,7 +111,6 @@ export default function Home() {
               height={40}
               className="object-contain"
             />
-            <h1 className="text-xl font-bold text-gray-800">講師スキル調査</h1>
           </div>
           <p className="text-xs text-gray-400 mt-1">回答は数分で完了します</p>
         </div>

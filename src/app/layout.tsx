@@ -10,14 +10,14 @@ const notoSansJP = Noto_Sans_JP({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://yes-instructor-survey.vercel.app"),
-  title: "講師スキル調査 | 糸島学習塾 YES",
+  title: "スキル＆興味シート | 糸島学習塾 YES",
   description: "糸島学習塾YESの講師スキル調査アンケートです。",
   icons: {
     icon: "/orange_right.jpg",
     apple: "/orange_right.jpg",
   },
   openGraph: {
-    title: "講師スキル調査 | 糸島学習塾 YES",
+    title: "スキル＆興味シート | 糸島学習塾 YES",
     description: "糸島学習塾YESの講師スキル調査アンケートです。",
     images: [
       {
