@@ -17,5 +17,6 @@ function getSupabase() {
 }
 
 export const supabase = {
-  from: (...args: Parameters<ReturnType<typeof createClient>['from']>) => getSupabase().from(...args),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  from: (...args: Parameters<ReturnType<typeof createClient<any>>['from']>) => getSupabase().from(...args),
 }
