@@ -1,65 +1,165 @@
-import Image from "next/image";
+'use client'
+
+import Image from 'next/image'
+import { useState } from 'react'
+import { SurveyData, createDefaultSubjects, createDefaultSkills } from '@/types/survey'
+import { supabase } from '@/lib/supabase'
+import ProgressBar from '@/components/ProgressBar'
+import Step1 from '@/components/Step1'
+import Step2 from '@/components/Step2'
+import Step3 from '@/components/Step3'
+import ConfirmStep from '@/components/ConfirmStep'
+import CompleteScreen from '@/components/CompleteScreen'
+
+const TOTAL_STEPS = 4
+
+function createInitialData(): SurveyData {
+  return {
+    instructorName: '',
+    subjects: createDefaultSubjects(),
+    skills: createDefaultSkills(),
+    contributions: [],
+    kidsInterests: [],
+    careerGoals: '',
+    proposals: '',
+    otherComments: '',
+  }
+}
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+  const [step, setStep] = useState(1)
+  const [data, setData] = useState<SurveyData>(createInitialData)
+  const [completed, setCompleted] = useState(false)
+  const [nameError, setNameError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  const update = (partial: Partial<SurveyData>) => {
+    setData(prev => ({ ...prev, ...partial }))
+  }
+
+  const goNext = () => {
+    if (step === 1) {
+      if (!data.instructorName.trim()) {
+        setNameError('お名前を入力してください')
+        return
+      }
+      setNameError('')
+    }
+    setStep(s => Math.min(s + 1, TOTAL_STEPS))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const goBack = () => {
+    setStep(s => Math.max(s - 1, 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const { error } = await supabase.from('survey_responses').insert({
+        instructor_name: data.instructorName.trim(),
+        subjects: data.subjects,
+        skills: data.skills,
+        contributions: data.contributions,
+        kids_interests: data.kidsInterests,
+        career_goals: data.careerGoals,
+        proposals: data.proposals,
+        other_comments: data.otherComments,
+      })
+
+      if (error) throw error
+
+      setCompleted(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      console.error(err)
+      setSubmitError('送信に失敗しました。時間をおいて再度お試しください。')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (completed) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6">
+          <CompleteScreen />
         </div>
       </main>
-    </div>
-  );
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 px-4 py-8">
+      <div className="w-full max-w-md mx-auto">
+        {/* ヘッダー */}
+        <div className="text-center mb-6">
+          <div className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
+            糸島学習塾 YES
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Image
+              src="/orange_right.jpg"
+              alt="YESくま"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <h1 className="text-xl font-bold text-gray-800">講師スキル調査</h1>
+          </div>
+          <p className="text-xs text-gray-400 mt-1">回答は数分で完了します</p>
+        </div>
+
+        {/* カード */}
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <ProgressBar currentStep={step} totalSteps={TOTAL_STEPS} />
+
+          <div className="transition-all duration-300">
+            {step === 1 && (
+              <Step1
+                data={data}
+                onChange={update}
+                onNext={goNext}
+                error={nameError}
+              />
+            )}
+            {step === 2 && (
+              <Step2
+                data={data}
+                onChange={update}
+                onNext={goNext}
+                onBack={goBack}
+              />
+            )}
+            {step === 3 && (
+              <Step3
+                data={data}
+                onChange={update}
+                onNext={goNext}
+                onBack={goBack}
+              />
+            )}
+            {step === 4 && (
+              <ConfirmStep
+                data={data}
+                onBack={goBack}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                submitError={submitError}
+              />
+            )}
+          </div>
+        </div>
+
+        <p className="text-center text-xs text-gray-300 mt-4">
+          © 2025 糸島学習塾 YES
+        </p>
+      </div>
+    </main>
+  )
 }
