@@ -27,7 +27,6 @@ export default function CompleteScreen() {
 
       <div className="bg-gradient-to-r from-blue-50 to-orange-50 border border-orange-100 rounded-2xl px-6 py-4 text-sm text-gray-600">
         <p className="font-semibold text-gray-700 mb-1">糸島学習塾 YES</p>
-        <p>いつも一緒に頑張っていきましょう！</p>
       </div>
     </div>
   )
